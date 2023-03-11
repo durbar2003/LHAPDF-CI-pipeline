@@ -1,0 +1,21 @@
+image: ubuntu:latest
+
+before_script:
+  - apt-get update
+  - apt-get install -y wget curl build-essential
+
+lhapdf_install:
+  script:
+    - wget https://lhapdf.hepforge.org/downloads/?f=LHAPDF-6.3.0.tar.gz -O LHAPDF.tar.gz
+    - tar -xzf LHAPDF.tar.gz
+    - cd LHAPDF-6.3.0/
+    - ./configure --prefix=$CI_PROJECT_DIR/lhapdf-install
+    - make -j4
+    - make install
+
+nnpdf_install:
+  script:
+    - export PATH=$CI_PROJECT_DIR/lhapdf-install/bin:$PATH
+    - export LHAPDF_DATA_PATH=$CI_PROJECT_DIR/lhapdf-install/share/LHAPDF
+    - lhapdf --list
+    - lhapdf install NNPDF40_nnlo_as_0118
